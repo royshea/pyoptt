@@ -136,6 +136,22 @@ class TestTree(unittest.TestCase):
         self.assertEqual(len(next_children), 2)
 
 
+    def test_get_parent(self):
+
+        tree_string = "3 4 2 -1 1 -1 -1 5"
+        root = tree.TreeNode("root")
+        root.build_tree_from_string(tree_string)
+
+        # Root should have no parents
+        self.assertEqual(root.parent, None)
+
+        # These nodes should have node 3 as their parent
+        children = root.get_children()[0].get_children()
+        self.assertEqual(len(children), 2)
+        self.assertEqual(children[0].get_parent().state, 3)
+        self.assertEqual(children[1].get_parent().state, 3)
+
+
     def test_get_depth(self):
 
         tree_string = "3 4 2 -1 1 -1 -1 5"

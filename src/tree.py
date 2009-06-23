@@ -75,6 +75,11 @@ class TreeNode():
         return self.children
 
 
+    def get_parent(self):
+        """Return the parent of a node."""
+        return self.parent
+
+
     def get_depth(self):
         """Return the depth of the current node.
 
