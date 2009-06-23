@@ -49,13 +49,120 @@ class TestTree(unittest.TestCase):
 
         root = tree.TreeNode()
         self.assertEqual(root.parent, None)
-        self.assertEqual(root.children, None)
+        self.assertEqual(root.children, [])
         self.assertEqual(root.state, None)
 
         root = tree.TreeNode("test")
         self.assertEqual(root.parent, None)
-        self.assertEqual(root.children, None)
+        self.assertEqual(root.children, [])
         self.assertEqual(root.state, "test")
+
+
+    def test_add_child(self):
+
+        root = tree.TreeNode()
+        root.create_child()
+        self.assertEqual(len(root.children), 1)
+
+
+    def test_num_children(self):
+
+        root = tree.TreeNode()
+        num_children = root.get_num_children()
+        self.assertEqual(num_children, 0)
+
+        root.create_child()
+        num_children = root.get_num_children()
+        self.assertEqual(num_children, 1)
+
+        root.create_child()
+        num_children = root.get_num_children()
+        self.assertEqual(num_children, 2)
+
+
+    def test_build_tree_from_string(self):
+
+        tree_string = "3 4 2 -1 1 -1 -1 5"
+        root = tree.TreeNode.build_tree_from_string(tree_string)
+        num_children = root.get_num_children()
+        self.assertEqual(num_children, 2)
+
+        tree_string = "3 -1 -1"
+        self.assertRaises(AssertionError,
+                tree.TreeNode.build_tree_from_string, tree_string)
+
+        tree_string = "-1"
+        self.assertRaises(AssertionError,
+                tree.TreeNode.build_tree_from_string, tree_string)
+
+        tree_string = "cow"
+        self.assertRaises(ValueError,
+                tree.TreeNode.build_tree_from_string, tree_string)
+
+
+    def test_get_children(self):
+
+        tree_string = "3 4 2 -1 1 -1 -1 5"
+        root = tree.TreeNode.build_tree_from_string(tree_string)
+
+        children = root.get_children()
+        self.assertEqual(len(children), 2)
+        child = children[0]
+        self.assertTrue(child.state == 4 or child.state == 5)
+
+        # Find the child with ID 4
+        children = root.get_children()
+        if children[0].state == 4:
+            child = children[0]
+        else:
+            child = children[1]
+        next_children = child.get_children()
+        self.assertEqual(len(next_children), 2)
+
+
+    def test_get_depth(self):
+
+        tree_string = "3 4 2 -1 1 -1 -1 5"
+        root = tree.TreeNode.build_tree_from_string(tree_string)
+        self.assertEqual(root.get_depth(), 0)
+
+        # Find the child with ID 4
+        children = root.get_children()
+        if children[0].state == 4:
+            depth_1 = children[0]
+        else:
+            depth_1 = children[1]
+        self.assertEqual(depth_1.get_depth(), 1)
+
+        depth_2 = depth_1.get_children()[0]
+        self.assertEqual(depth_2.get_depth(), 2)
+
+
+    def test_get_root(self):
+
+        tree_string = "3 4 2 -1 1 -1 -1 5"
+        root = tree.TreeNode.build_tree_from_string(tree_string)
+        self.assertEqual(root.get_depth(), 0)
+
+        # Find the child with ID 4
+        children = root.get_children()
+        if children[0].state == 4:
+            depth_1 = children[0]
+        else:
+            depth_1 = children[1]
+
+        depth_2 = depth_1.get_children()[0]
+        self.assertEqual(depth_2.get_root(), root)
+
+
+    def test_print(self):
+
+        tree_string = "3 4 2 -1 1 -1 -1 5"
+        printed_tree = "3\n4\n2\n4 -> 2\n1\n4 -> 1\n3 -> 4\n5\n3 -> 5\n"
+
+        root = tree.TreeNode.build_tree_from_string(tree_string)
+        self.assertEqual(str(root), printed_tree)
+
 
 
 if __name__ == '__main__':

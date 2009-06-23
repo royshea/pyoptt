@@ -40,11 +40,109 @@ class TreeNode():
     """Node in a tree data structure.
 
     Each node keeps track of a local node state, a parent node, and zero
-    or more children nodes.
+    or more children nodes.  The parent and child relationships between
+    a set of nodes define a tree structure.
     """
 
-    def __init__(self, state=None):
-
-        self.parent = None
-        self.children = None
+    def __init__(self, state=None, parent=None):
+        """Create a new node with optinal state."""
+        self.parent = parent
+        self.children = []
         self.state = state
+        return
+
+
+    def _store_child(self, child):
+        self.children.append(child)
+        return
+
+
+    def create_child(self, state=None):
+        """Create a new child node of self with optional state."""
+        child = TreeNode(state, self)
+        self._store_child(child)
+        return child
+
+
+    def get_num_children(self):
+        """Return the number of children of a node."""
+        return len(self.children)
+
+
+    def get_children(self):
+        """Return the children of a node."""
+        return self.children
+
+
+    def get_depth(self):
+        """Return the depth of the current node.
+
+        The root node is defined to have depth 0.
+        """
+        if self.parent == None:
+            return 0
+        else:
+            return self.parent.get_depth() + 1
+
+
+    def get_root(self):
+        """Return the root of the tree.
+
+        The root is assumed to be the only node in the tree that has no
+        parent.
+        """
+        if self.parent == None:
+            return self
+        else:
+            return self.parent.get_root()
+
+
+    def __str__(self):
+        """Write node child relations."""
+        out_string = ""
+        out_string += "%s\n" % self.state
+        for child in self.children:
+            out_string += str(child)
+            out_string += "%s -> %s\n" % (self.state, child.state)
+        return out_string
+
+
+    @classmethod
+    def build_tree_from_string(self, tree_string):
+        """Build a tree using tree_string.
+
+        The string is a space separeted serries of positive integers or
+        negative one.  Tokens with positive integer values describe the
+        value of a child node, or the value of the root node if it is
+        the first token in the string.  Children are inserted using a
+        depth first order, with negative one signalling a return to a
+        parent node."""
+
+        root = None
+        current_node = None
+
+        # Parse the token stream
+        states = [int(token) for token in tree_string.split()]
+
+        # Build the tree
+        for state in states:
+            assert state >= -1
+
+            if current_node == None:
+                # Special case for the root of the tree
+                assert state != -1
+                root = TreeNode(state)
+                current_node = root
+                continue
+
+            elif state != -1:
+                # Initialize a child using state and descend into the child
+                current_node = current_node.create_child(state)
+
+            else:
+                # Move up a level in the tree
+                assert state == -1
+                assert current_node != root
+                current_node = current_node.parent
+
+        return root
