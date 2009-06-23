@@ -168,6 +168,19 @@ class TestTree(unittest.TestCase):
         self.assertEqual(self.node4.get_root(), self.root)
 
 
+    def test_get_num_nodes(self):
+
+        self.assertEqual(self.root.get_num_nodes(), 6)
+        self.assertEqual(self.node3.get_num_nodes(), 5)
+        self.assertEqual(self.node4.get_num_nodes(), 3)
+
+
+    def test_get_nodes(self):
+
+        nodes = self.root.get_nodes()
+        self.assertEqual(len(nodes), 6)
+
+
 class OrderedTestTree(unittest.TestCase):
 
     def setUp(self):

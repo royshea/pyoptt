@@ -107,6 +107,21 @@ class TreeNode():
             return self.parent.get_root()
 
 
+    def get_num_nodes(self):
+        """Retun the number of nodes rooted under self."""
+        successors = [child.get_num_nodes() for child in self.get_children()]
+        return sum(successors) + 1
+
+
+    def get_nodes(self):
+        """Retun the liste of nodes in the tree rooted under self."""
+        nodes = []
+        for child in self.get_children():
+            nodes += child.get_nodes()
+        nodes.append(self)
+        return nodes
+
+
     def __str__(self):
         """Write node child relations."""
         out_string = ""
