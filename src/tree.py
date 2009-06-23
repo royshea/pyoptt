@@ -53,11 +53,12 @@ class TreeNode():
 
 
     def _store_child(self, child):
+        """Insert child under self."""
         self.children.append(child)
         return
 
 
-    def create_child(self, state=None):
+    def append_child(self, state=None):
         """Create a new child node of self with optional state."""
         child = TreeNode(state, self)
         self._store_child(child)
@@ -107,19 +108,18 @@ class TreeNode():
         return out_string
 
 
-    @classmethod
     def build_tree_from_string(self, tree_string):
-        """Build a tree using tree_string.
+        """Build a tree rooted from self using tree_string.
 
         The string is a space separeted serries of positive integers or
         negative one.  Tokens with positive integer values describe the
-        value of a child node, or the value of the root node if it is
-        the first token in the string.  Children are inserted using a
-        depth first order, with negative one signalling a return to a
-        parent node."""
+        value of a child node.  Children are inserted using a depth
+        traversal, with negative one signalling a return to a parent
+        node.
+        """
 
-        root = None
-        current_node = None
+        root = self
+        current_node = root
 
         # Parse the token stream
         states = [int(token) for token in tree_string.split()]
@@ -128,21 +128,40 @@ class TreeNode():
         for state in states:
             assert state >= -1
 
-            if current_node == None:
-                # Special case for the root of the tree
-                assert state != -1
-                root = TreeNode(state)
-                current_node = root
-                continue
-
-            elif state != -1:
+            if state != -1:
                 # Initialize a child using state and descend into the child
-                current_node = current_node.create_child(state)
+                current_node = current_node.append_child(state)
 
             else:
                 # Move up a level in the tree
-                assert state == -1
                 assert current_node != root
                 current_node = current_node.parent
 
         return root
+
+
+class OrderedTreeNode(TreeNode):
+    """Node within an ordered tree.
+
+    An ordered tree defines an ordering over each child of a node.
+    """
+
+
+    def _store_child(self, child, index):
+        """Insert child as the index-th child under self.
+
+        The child is inserted before index.  This insertion has the same
+        semantics as list.insert.
+        """
+
+        self.children.insert(index, child)
+        return
+
+
+    def append_child(self, state=None):
+        """Create a new child node of self with optional state and
+        insert it after all other children."""
+        child = OrderedTreeNode(state, self)
+        self._store_child(child, len(self.children))
+        return child
+
