@@ -42,160 +42,130 @@ import tree
 class TestTree(unittest.TestCase):
 
     def setUp(self):
-        pass
+        tree_string = "3 4 2 -1 1 -1 -1 5"
+        self.root = tree.OrderedTreeNode("root")
+        self.root.build_tree_from_string(tree_string)
+
+        # Find the child with ID 4
+        self.node3 = self.root.get_children()[0]
+
+        # Find the child with ID 4
+        children = self.node3.get_children()
+        if children[0].state == 4:
+            self.node4 = children[0]
+        else:
+            self.node4 = children[1]
 
 
     def test_init(self):
 
-        root = tree.TreeNode()
-        self.assertEqual(root.parent, None)
-        self.assertEqual(root.children, [])
-        self.assertEqual(root.state, None)
+        local_root = tree.TreeNode()
+        self.assertEqual(local_root.parent, None)
+        self.assertEqual(local_root.children, [])
+        self.assertEqual(local_root.state, None)
 
-        root = tree.TreeNode("test")
-        self.assertEqual(root.parent, None)
-        self.assertEqual(root.children, [])
-        self.assertEqual(root.state, "test")
+        local_root = tree.TreeNode("test")
+        self.assertEqual(local_root.parent, None)
+        self.assertEqual(local_root.children, [])
+        self.assertEqual(local_root.state, "test")
 
 
     def test_add_child(self):
 
-        root = tree.TreeNode()
-        root.append_child()
-        self.assertEqual(len(root.children), 1)
+        local_root = tree.TreeNode()
+        local_root.append_child()
+        self.assertEqual(len(local_root.children), 1)
 
 
     def test_num_children(self):
 
-        root = tree.TreeNode()
-        num_children = root.get_num_children()
+        local_root = tree.TreeNode()
+        num_children = local_root.get_num_children()
         self.assertEqual(num_children, 0)
 
-        root.append_child()
-        num_children = root.get_num_children()
+        local_root.append_child()
+        num_children = local_root.get_num_children()
         self.assertEqual(num_children, 1)
 
-        root.append_child()
-        num_children = root.get_num_children()
+        local_root.append_child()
+        num_children = local_root.get_num_children()
         self.assertEqual(num_children, 2)
 
 
     def test_build_tree_from_string(self):
 
         tree_string = "3 4 2 -1 1 -1 -1 5"
-        root = tree.TreeNode("root")
-        root.build_tree_from_string(tree_string)
-        num_children = root.get_num_children()
+        local_root = tree.TreeNode("local_root")
+        local_root.build_tree_from_string(tree_string)
+        num_children = local_root.get_num_children()
         self.assertEqual(num_children, 1)
-        num_children = root.get_children()[0].get_num_children()
+        num_children = local_root.get_children()[0].get_num_children()
         self.assertEqual(num_children, 2)
 
         tree_string = "3 -1 -1"
-        root = tree.TreeNode("root")
-        self.assertRaises(AssertionError, root.build_tree_from_string,
+        local_root = tree.TreeNode("local_root")
+        self.assertRaises(AssertionError, local_root.build_tree_from_string,
                 tree_string)
 
         tree_string = "-1"
-        root = tree.TreeNode("root")
-        self.assertRaises(AssertionError, root.build_tree_from_string,
+        local_root = tree.TreeNode("local_root")
+        self.assertRaises(AssertionError, local_root.build_tree_from_string,
                 tree_string)
 
         tree_string = "cow"
-        root = tree.TreeNode("root")
-        self.assertRaises(ValueError, root.build_tree_from_string,
+        local_root = tree.TreeNode("local_root")
+        self.assertRaises(ValueError, local_root.build_tree_from_string,
                 tree_string)
 
 
     def test_get_children(self):
 
-        tree_string = "3 4 2 -1 1 -1 -1 5"
-        root = tree.TreeNode("root")
-        root.build_tree_from_string(tree_string)
-
         # Root should have 3 as a child
-        children = root.get_children()
+        children = self.root.get_children()
         self.assertEqual(len(children), 1)
-        child = children[0]
-        self.assertEqual(child.state, 3)
+        self.assertEqual(children[0], self.node3)
 
         # Node with state 3 should have two children with states 4 and 5
-        children = child.get_children()
+        children = self.node3.get_children()
         self.assertEqual(len(children), 2)
         child = children[0]
         self.assertTrue(child.state == 4 or child.state == 5)
         child = children[1]
         self.assertTrue(child.state == 4 or child.state == 5)
 
-        # Find the child with ID 4
-        children = root.get_children()[0].get_children()
-        if children[0].state == 4:
-            child = children[0]
-        else:
-            child = children[1]
-        next_children = child.get_children()
-        self.assertEqual(len(next_children), 2)
+        # Node with state 4 should have two children with states 2 and 1
+        children = self.node4.get_children()
+        self.assertEqual(len(children), 2)
+        child = children[0]
+        self.assertTrue(child.state == 2 or child.state == 1)
+        child = children[1]
+        self.assertTrue(child.state == 2 or child.state == 1)
 
 
     def test_get_parent(self):
 
-        tree_string = "3 4 2 -1 1 -1 -1 5"
-        root = tree.TreeNode("root")
-        root.build_tree_from_string(tree_string)
-
         # Root should have no parents
-        self.assertEqual(root.parent, None)
+        self.assertEqual(self.root.parent, None)
 
-        # These nodes should have node 3 as their parent
-        children = root.get_children()[0].get_children()
-        self.assertEqual(len(children), 2)
-        self.assertEqual(children[0].get_parent().state, 3)
-        self.assertEqual(children[1].get_parent().state, 3)
+        # Node 4 should have node 3 as its parent
+        self.assertEqual(self.node4.get_parent().state, 3)
+
+        # Node 3 should have "root" as its parent
+        self.assertEqual(self.node3.get_parent().state, "root")
 
 
     def test_get_depth(self):
 
-        tree_string = "3 4 2 -1 1 -1 -1 5"
-        root = tree.TreeNode("root")
-        root.build_tree_from_string(tree_string)
-        self.assertEqual(root.get_depth(), 0)
-
-        # Find the child with ID 4
-        children = root.get_children()[0].get_children()
-        if children[0].state == 4:
-            depth_2 = children[0]
-        else:
-            depth_2 = children[1]
-        self.assertEqual(depth_2.get_depth(), 2)
-
-        depth_3 = depth_2.get_children()[0]
-        self.assertEqual(depth_3.get_depth(), 3)
+        self.assertEqual(self.root.get_depth(), 0)
+        self.assertEqual(self.node3.get_depth(), 1)
+        self.assertEqual(self.node4.get_depth(), 2)
 
 
     def test_get_root(self):
 
-        tree_string = "3 4 2 -1 1 -1 -1 5"
-        root = tree.TreeNode("root")
-        root.build_tree_from_string(tree_string)
-
-        # Find the child with ID 4
-        children = root.get_children()[0].get_children()
-        if children[0].state == 4:
-            depth_2 = children[0]
-        else:
-            depth_2 = children[1]
-
-        depth_3 = depth_2.get_children()[0]
-        self.assertEqual(depth_3.get_root(), root)
-
-
-    def test_print(self):
-
-        tree_string = "3 4 2 -1 1 -1 -1 5"
-        printed_tree ="node_47_root [label=root]\nnode_48_3 [label=3]\nnode_49_4 [label=4]\nnode_50_2 [label=2]\nnode_49_4 -> node_50_2\nnode_51_1 [label=1]\nnode_49_4 -> node_51_1\nnode_48_3 -> node_49_4\nnode_52_5 [label=5]\nnode_48_3 -> node_52_5\nnode_47_root -> node_48_3\n"
-
-        root = tree.TreeNode("root")
-        root.build_tree_from_string(tree_string)
-        self.assertEqual(str(root), printed_tree)
+        self.assertEqual(self.root.get_root(), self.root)
+        self.assertEqual(self.node3.get_root(), self.root)
+        self.assertEqual(self.node4.get_root(), self.root)
 
 
 class OrderedTestTree(unittest.TestCase):
