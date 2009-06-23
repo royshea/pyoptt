@@ -44,11 +44,15 @@ class TreeNode():
     a set of nodes define a tree structure.
     """
 
+    node_counter = 0
+
     def __init__(self, state=None, parent=None):
         """Create a new node with optinal state."""
         self.parent = parent
         self.children = []
         self.state = state
+        self.id = TreeNode.node_counter
+        TreeNode.node_counter += 1
         return
 
 
@@ -106,10 +110,12 @@ class TreeNode():
     def __str__(self):
         """Write node child relations."""
         out_string = ""
-        out_string += "%s\n" % self.state
+        out_string += "node_%d_%s [label=%s]\n" % (self.id, str(self.state),
+                str(self.state))
         for child in self.children:
             out_string += str(child)
-            out_string += "%s -> %s\n" % (self.state, child.state)
+            out_string += "node_%d_%s -> node_%d_%s\n" % (self.id, self.state,
+                    child.id, child.state)
         return out_string
 
 

@@ -191,7 +191,7 @@ class TestTree(unittest.TestCase):
     def test_print(self):
 
         tree_string = "3 4 2 -1 1 -1 -1 5"
-        printed_tree = "root\n3\n4\n2\n4 -> 2\n1\n4 -> 1\n3 -> 4\n5\n3 -> 5\nroot -> 3\n"
+        printed_tree ="node_47_root [label=root]\nnode_48_3 [label=3]\nnode_49_4 [label=4]\nnode_50_2 [label=2]\nnode_49_4 -> node_50_2\nnode_51_1 [label=1]\nnode_49_4 -> node_51_1\nnode_48_3 -> node_49_4\nnode_52_5 [label=5]\nnode_48_3 -> node_52_5\nnode_47_root -> node_48_3\n"
 
         root = tree.TreeNode("root")
         root.build_tree_from_string(tree_string)
