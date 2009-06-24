@@ -242,6 +242,7 @@ class OrderedTreeNode(TreeNode):
             nodes += child.get_nodes()
         return nodes
 
+
     def get_right_most_leaf(self):
         """Return the right most leaf of the tree rooted at self."""
         if self.children == []:
@@ -251,7 +252,10 @@ class OrderedTreeNode(TreeNode):
 
 
     def structural_equality(self, other):
-        """State and connectivity equality over the rooted subtree."""
+        """State and connectivity equality over the rooted subtree.
+
+        Note that this is defined over OrderedTreeNode trees since it
+        assumes a specific ordering of child nodes."""
 
         # Ensure that the current nodes are equal
         if self.state == other.state and \
@@ -263,3 +267,21 @@ class OrderedTreeNode(TreeNode):
         else: return False
 
         return True
+
+
+    def build_string_from_tree(self):
+        """Generate a "build string" from rooted subtree.
+
+        This function is the inverse of build_tree_from_string and
+        generates a string description of the tree that can be used by
+        build_tree_from_string to regenerate the tree.  This is NOT the
+        default __str__ function used for pretty printing a tree.  Note
+        that this is defined over OrderedTreeNode trees since it assumes
+        a specific ordering of child nodes.
+        """
+
+        out_string = "%s" % self.state
+        for child in self.get_children():
+            out_string += " " + child.build_string_from_tree()
+        out_string += " -1"
+        return out_string
