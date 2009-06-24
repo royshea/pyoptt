@@ -39,19 +39,24 @@
 import tree
 
 def get_c1(root, minsup):
+    """Find the right most occurance of minsup frequent 1-itemsets."""
 
     num_nodes = root.get_num_nodes()
 
     # Track the number of times each token appears as the state of a
     # node within the tree rooted at root.
     occurrences = {}
+    rmo = {}
     for node in root.get_nodes():
         token = node.state
         occurrences[token] = occurrences.get(token, 0) + 1
+        rmo[token] = node.get_tree_position()
 
     # Only keep track of the tokens that occure with frequency greater
     # than minsup
-    minsup_frequent = [token for (token, value) in occurrences.items()
-            if value > minsup * num_nodes]
+    minsup_frequent = {}
+    for (token, value) in occurrences.items():
+        if value > minsup * num_nodes:
+            minsup_frequent[token] = rmo[token]
 
     return minsup_frequent

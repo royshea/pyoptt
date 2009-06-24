@@ -49,18 +49,19 @@ class TestFreqt(unittest.TestCase):
 
     def test_get_c1(self):
         c1 = freqt.get_c1(self.root, 0.05)
-        self.assertTrue(1 in c1)
-        self.assertTrue(2 in c1)
-        self.assertTrue("root" in c1)
+        self.assertTrue(1 in c1.keys())
+        self.assertTrue(2 in c1.keys())
+        self.assertTrue("root" in c1.keys())
         self.assertEqual(len(c1), 3)
 
         c1 = freqt.get_c1(self.root, 0.15)
-        self.assertTrue(1 in c1)
-        self.assertTrue(2 in c1)
+        self.assertTrue(1 in c1.keys())
+        self.assertTrue(2 in c1.keys())
         self.assertEqual(len(c1), 2)
 
         c1 = freqt.get_c1(self.root, 0.8)
         self.assertEqual(len(c1), 0)
+
 
 if __name__ == '__main__':
     unittest.main()
