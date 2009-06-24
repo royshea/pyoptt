@@ -37,6 +37,7 @@
 # Date: June 2009
 
 import tree
+import copy
 
 def get_c1(root, minsup):
     """Find the right most occurance of minsup frequent 1-itemsets."""
@@ -60,3 +61,16 @@ def get_c1(root, minsup):
             minsup_frequent[token] = rmo[token]
 
     return minsup_frequent
+
+
+def pl_expand(t, p, l):
+    """PL expand a tree.
+
+    Expand tree t by adding node with label l to the p-th parent of the
+    right most leaf."""
+
+    expanded = copy.deepcopy(t)
+    rml = expanded.get_right_most_leaf()
+    pth_parent = rml.get_pth_parent(p)
+    pth_parent.append_child(l)
+    return expanded

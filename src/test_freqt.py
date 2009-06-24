@@ -63,6 +63,24 @@ class TestFreqt(unittest.TestCase):
         self.assertEqual(len(c1), 0)
 
 
+    def test_pl_expond(self):
+
+        tree0 = freqt.pl_expand(self.root, 0, 3)
+        self.assertEqual(tree0.get_num_nodes(), 11)
+        self.assertEqual(tree0.get_nodes()[10].state, 3)
+        self.assertEqual(tree0.get_nodes()[10].get_parent().state, 2)
+
+        tree1 = freqt.pl_expand(self.root, 1, 3)
+        self.assertEqual(tree1.get_num_nodes(), 11)
+        self.assertEqual(tree1.get_nodes()[10].state, 3)
+        self.assertEqual(tree1.get_nodes()[10].get_parent().state, 1)
+
+        tree2 = freqt.pl_expand(self.root, 2, 3)
+        self.assertEqual(tree2.get_num_nodes(), 11)
+        self.assertEqual(tree2.get_nodes()[10].state, 3)
+        self.assertEqual(tree2.get_nodes()[10].get_parent().state, "root")
+
+
 if __name__ == '__main__':
     unittest.main()
 
