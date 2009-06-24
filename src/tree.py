@@ -172,6 +172,17 @@ class OrderedTreeNode(TreeNode):
     An ordered tree defines an ordering over each child of a node.
     """
 
+    def __init__(self, state=None, parent=None):
+        TreeNode.__init__(self, state, parent)
+        self.position = None
+
+
+    def get_tree_position(self):
+        """Return the position of the node in the tree.
+
+        Positions are determined based on a depth first preordering.
+        """
+        return self.position
 
     def _store_child(self, child, index):
         """Insert child as the index-th child under self.
@@ -184,10 +195,34 @@ class OrderedTreeNode(TreeNode):
         return
 
 
+    def _update_positions(self):
+        """Update the position of each node in a tree.
+
+        Positions are determined based on a depth first pre-ordering
+        with the root node at position 0.
+        """
+
+        root = self.get_root()
+        nodes = root.get_nodes()
+        for (node, position) in zip(nodes, range(len(nodes))):
+            node.position = position
+
+
     def append_child(self, state=None):
         """Create a new child node of self with optional state and
         insert it after all other children."""
         child = OrderedTreeNode(state, self)
         self._store_child(child, len(self.children))
+        self._update_positions()
         return child
 
+
+    def get_nodes(self):
+        """Retun the liste of nodes in the tree rooted under self.
+
+        List is guanteed to be in depth first preorder.
+        """
+        nodes = [self]
+        for child in self.get_children():
+            nodes += child.get_nodes()
+        return nodes
