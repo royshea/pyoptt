@@ -46,20 +46,18 @@ def get_c1(root, minsup):
 
     # Track the number of times each token appears as the state of a
     # node within the tree rooted at root.
-    occurrences = {}
     rmo = {}
     for node in root.get_nodes():
         token = node.state
-        occurrences[token] = occurrences.get(token, 0) + 1
-        rmo[token] = node.get_tree_position()
+        position = node.get_tree_position()
+        rmo[token] = rmo.setdefault(token, []) + [position]
 
     # Only keep track of the tokens that occure with frequency greater
     # than minsup
     minsup_frequent = {}
-    for (token, value) in occurrences.items():
-        if value > minsup * num_nodes:
-            minsup_frequent[token] = rmo[token]
-
+    for (token, rmos) in rmo.items():
+        if len(rmos) > minsup * num_nodes:
+            minsup_frequent[token] = rmos
     return minsup_frequent
 
 

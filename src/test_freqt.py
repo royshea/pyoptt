@@ -49,21 +49,24 @@ class TestFreqt(unittest.TestCase):
 
     def test_get_c1(self):
         c1 = freqt.get_c1(self.root, 0.05)
-        self.assertTrue(1 in c1.keys())
-        self.assertTrue(2 in c1.keys())
-        self.assertTrue("root" in c1.keys())
         self.assertEqual(len(c1), 3)
+        self.assertTrue(1 in c1.keys())
+        self.assertEqual(len(c1[1]), 6)
+        self.assertTrue(2 in c1.keys())
+        self.assertEqual(len(c1[2]), 3)
+        self.assertTrue("root" in c1.keys())
+        self.assertEqual(len(c1["root"]), 1)
 
         c1 = freqt.get_c1(self.root, 0.15)
+        self.assertEqual(len(c1), 2)
         self.assertTrue(1 in c1.keys())
         self.assertTrue(2 in c1.keys())
-        self.assertEqual(len(c1), 2)
 
         c1 = freqt.get_c1(self.root, 0.8)
         self.assertEqual(len(c1), 0)
 
 
-    def test_pl_expond(self):
+    def test_pl_expand(self):
 
         tree0 = freqt.pl_expand(self.root, 0, 3)
         self.assertEqual(tree0.get_num_nodes(), 11)
