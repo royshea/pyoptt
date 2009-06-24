@@ -152,13 +152,28 @@ class TestTree(unittest.TestCase):
     def test_get_parent(self):
 
         # Root should have no parents
-        self.assertEqual(self.root.parent, None)
+        self.assertEqual(self.root.get_parent(), None)
 
         # Node 4 should have node 3 as its parent
         self.assertEqual(self.node4.get_parent().state, 3)
 
         # Node 3 should have "root" as its parent
         self.assertEqual(self.node3.get_parent().state, "root")
+
+
+    def test_get_pth_parent(self):
+
+        self.assertEqual(self.root.get_pth_parent(0), self.root)
+        self.assertRaises(AssertionError, self.root.get_pth_parent, 1)
+
+        self.assertEqual(self.node3.get_pth_parent(0), self.node3)
+        self.assertEqual(self.node3.get_pth_parent(1), self.root)
+        self.assertRaises(AssertionError, self.node3.get_pth_parent, 2)
+
+        self.assertEqual(self.node4.get_pth_parent(0), self.node4)
+        self.assertEqual(self.node4.get_pth_parent(1), self.node3)
+        self.assertEqual(self.node4.get_pth_parent(2), self.root)
+        self.assertRaises(AssertionError, self.node4.get_pth_parent, 3)
 
 
     def test_get_depth(self):

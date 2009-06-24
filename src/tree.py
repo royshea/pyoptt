@@ -84,6 +84,21 @@ class TreeNode():
         return self.parent
 
 
+    def get_pth_parent(self, p):
+        """Return the pth parent of self.
+
+        The 0th parent of a node is itself.  It is considered an error
+        if p is greater than depth of self, since this would pass the
+        root of the tree.
+        """
+
+        assert p <= self.get_depth()
+        if p == 0:
+            return self
+        else:
+            return self.parent.get_pth_parent(p-1)
+
+
     def get_depth(self):
         """Return the depth of the current node.
 
