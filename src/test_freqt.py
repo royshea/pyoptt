@@ -84,6 +84,51 @@ class TestFreqt(unittest.TestCase):
         self.assertEqual(tree2.get_nodes()[10].get_parent().state, "root")
 
 
+    def test_update_rmo(self):
+
+        # c1 = {1:[1, 2, 4, 6, 7, 8], 2:[3, 5, 9]}
+        c1 = freqt.get_c1(self.root, 0.15)
+
+        # Test all possible extensions off of c1.
+        rmo_1 = c1[1]
+        rmo_2 = c1[2]
+
+        rmo_11 = freqt.update_rmo(self.root, rmo_1, 0, 1)
+        self.assertEqual(len(rmo_11), 4)
+
+        rmo_12 = freqt.update_rmo(self.root, rmo_1, 0, 2)
+        self.assertEqual(len(rmo_12), 3)
+
+        rmo_13 = freqt.update_rmo(self.root, rmo_1, 0, 3)
+        self.assertEqual(len(rmo_13), 0)
+
+        rmo_21 = freqt.update_rmo(self.root, rmo_2, 0, 1)
+        self.assertEqual(len(rmo_21), 0)
+
+        rmo_22 = freqt.update_rmo(self.root, rmo_2, 0, 2)
+        self.assertEqual(len(rmo_22), 0)
+
+        rmo_23 = freqt.update_rmo(self.root, rmo_2, 0, 3)
+        self.assertEqual(len(rmo_23), 0)
+
+        rmo_11 = freqt.update_rmo(self.root, rmo_1, 0, 1)
+        self.assertEqual(len(rmo_11), 4)
+
+        # Test extensions off of rmo_11.  There should be no p=0
+        # extensions, but a few from p=1.
+
+        rmo_111_p0 = freqt.update_rmo(self.root, rmo_11, 0, 1)
+        self.assertEqual(len(rmo_111_p0), 0)
+
+        rmo_111_p1 = freqt.update_rmo(self.root, rmo_11, 1, 1)
+        self.assertEqual(len(rmo_111_p1), 2)
+
+        rmo_112_p0 = freqt.update_rmo(self.root, rmo_11, 0, 2)
+        self.assertEqual(len(rmo_112_p0), 0)
+
+        rmo_112_p1 = freqt.update_rmo(self.root, rmo_11, 1, 2)
+        self.assertEqual(len(rmo_112_p1), 3)
+
+
 if __name__ == '__main__':
     unittest.main()
-
