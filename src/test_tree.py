@@ -275,5 +275,18 @@ class OrderedTestTree(unittest.TestCase):
         self.assertEqual(self.node4.get_right_most_leaf().state, 1)
 
 
+    def test_structural_equality(self):
+
+        tree_string = "3 4 2 -1 1 -1 -1 5"
+
+        r1 = tree.OrderedTreeNode("root")
+        r2 = tree.OrderedTreeNode("root")
+        self.assertTrue(r1.structural_equality(r2))
+
+        r1.build_tree_from_string(tree_string)
+        r2.build_tree_from_string(tree_string)
+        self.assertTrue(r1.structural_equality(r2))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -137,18 +137,6 @@ class TreeNode():
         return nodes
 
 
-    def __str__(self):
-        """Write node child relations."""
-        out_string = ""
-        out_string += "node_%d_%s [label=%s]\n" % (self.id, str(self.state),
-                str(self.state))
-        for child in self.children:
-            out_string += str(child)
-            out_string += "node_%d_%s -> node_%d_%s\n" % (self.id, self.state,
-                    child.id, child.state)
-        return out_string
-
-
     def build_tree_from_string(self, tree_string):
         """Build a tree rooted from self using tree_string.
 
@@ -179,6 +167,18 @@ class TreeNode():
                 current_node = current_node.parent
 
         return root
+
+
+    def __str__(self):
+        """Write node child relations."""
+        out_string = ""
+        out_string += "node_%d_%s [label=%s]\n" % (self.id, str(self.state),
+                str(self.state))
+        for child in self.children:
+            out_string += str(child)
+            out_string += "node_%d_%s -> node_%d_%s\n" % (self.id, self.state,
+                    child.id, child.state)
+        return out_string
 
 
 class OrderedTreeNode(TreeNode):
@@ -248,3 +248,18 @@ class OrderedTreeNode(TreeNode):
             return self
         else:
             return self.children[-1].get_right_most_leaf()
+
+
+    def structural_equality(self, other):
+        """State and connectivity equality over the rooted subtree."""
+
+        # Ensure that the current nodes are equal
+        if self.state == other.state and \
+                len(self.children) == len(other.children):
+            for (self_child, other_child) in zip(self.children,
+                    other.children):
+                if self_child.structural_equality(other_child): continue
+                else: return False
+        else: return False
+
+        return True
