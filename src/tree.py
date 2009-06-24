@@ -233,7 +233,7 @@ class OrderedTreeNode(TreeNode):
 
 
     def get_nodes(self):
-        """Retun the liste of nodes in the tree rooted under self.
+        """Retun the list of nodes in the tree rooted under self.
 
         List is guanteed to be in depth first preorder.
         """
@@ -241,3 +241,10 @@ class OrderedTreeNode(TreeNode):
         for child in self.get_children():
             nodes += child.get_nodes()
         return nodes
+
+    def get_right_most_leaf(self):
+        """Return the right most leaf of the tree rooted at self."""
+        if self.children == []:
+            return self
+        else:
+            return self.children[-1].get_right_most_leaf()

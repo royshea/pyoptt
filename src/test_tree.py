@@ -268,6 +268,12 @@ class OrderedTestTree(unittest.TestCase):
         self.assertEqual(self.node5.get_tree_position(), 5)
 
 
+    def test_get_right_most_leaf(self):
+
+        self.assertEqual(self.root.get_right_most_leaf().state, 5)
+        self.assertEqual(self.node3.get_right_most_leaf().state, 5)
+        self.assertEqual(self.node4.get_right_most_leaf().state, 1)
+
 
 if __name__ == '__main__':
     unittest.main()
