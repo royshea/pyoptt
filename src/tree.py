@@ -47,10 +47,10 @@ class TreeNode():
     node_counter = 0
 
     def __init__(self, state=None, parent=None):
-        """Create a new node with optinal state."""
+        """Create a new node with optional state."""
         self.parent = parent
         self.children = []
-        self.state = state
+        self.state = str(state)
         self.id = TreeNode.node_counter
         TreeNode.node_counter += 1
         return
@@ -123,13 +123,13 @@ class TreeNode():
 
 
     def get_num_nodes(self):
-        """Retun the number of nodes rooted under self."""
+        """Return the number of nodes rooted under self."""
         successors = [child.get_num_nodes() for child in self.get_children()]
         return sum(successors) + 1
 
 
     def get_nodes(self):
-        """Retun the liste of nodes in the tree rooted under self."""
+        """Return the list of nodes in the tree rooted under self."""
         nodes = []
         for child in self.get_children():
             nodes += child.get_nodes()
@@ -140,24 +140,19 @@ class TreeNode():
     def build_tree_from_string(self, tree_string):
         """Build a tree rooted from self using tree_string.
 
-        The string is a space separeted serries of positive integers or
-        negative one.  Tokens with positive integer values describe the
-        value of a child node.  Children are inserted using a depth
-        traversal, with negative one signalling a return to a parent
-        node.
-        """
+        The string is a space separated serries of tokens or the string
+        "-1" (negative one).  Tokens describe the value of a child node.
+        Children are inserted using a depth traversal, with negative one
+        signalling a return to a parent node."""
 
         root = self
         current_node = root
 
-        # Parse the token stream
-        states = [int(token) for token in tree_string.split()]
-
         # Build the tree
-        for state in states:
-            assert state >= -1
+        for state in tree_string.split():
+            assert state >= '-1'
 
-            if state != -1:
+            if state != '-1':
                 # Initialize a child using state and descend into the child
                 current_node = current_node.append_child(state)
 
@@ -195,7 +190,7 @@ class OrderedTreeNode(TreeNode):
     def get_tree_position(self):
         """Return the position of the node in the tree.
 
-        Positions are determined based on a depth first preordering.
+        Positions are determined based on a depth first pre-ordering.
         """
         return self.position
 
@@ -233,9 +228,9 @@ class OrderedTreeNode(TreeNode):
 
 
     def get_nodes(self):
-        """Retun the list of nodes in the tree rooted under self.
+        """Return the list of nodes in the tree rooted under self.
 
-        List is guanteed to be in depth first preorder.
+        List is gaunted to be in depth first pre-order.
         """
         nodes = [self]
         for child in self.get_children():

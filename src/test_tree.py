@@ -51,14 +51,14 @@ class TestTree(unittest.TestCase):
 
         # Find the child with ID 4
         children = self.node3.get_children()
-        if children[0].state == 4:
+        if children[0].state == '4':
             self.node4 = children[0]
         else:
             self.node4 = children[1]
 
         # Find the child with ID 5
         children = self.node3.get_children()
-        if children[0].state == 5:
+        if children[0].state == '5':
             self.node5 = children[0]
         else:
             self.node5 = children[1]
@@ -119,11 +119,6 @@ class TestTree(unittest.TestCase):
         self.assertRaises(AssertionError, local_root.build_tree_from_string,
                 tree_string)
 
-        tree_string = "cow"
-        local_root = tree.TreeNode("local_root")
-        self.assertRaises(ValueError, local_root.build_tree_from_string,
-                tree_string)
-
 
     def test_get_children(self):
 
@@ -136,17 +131,17 @@ class TestTree(unittest.TestCase):
         children = self.node3.get_children()
         self.assertEqual(len(children), 2)
         child = children[0]
-        self.assertTrue(child.state == 4 or child.state == 5)
+        self.assertTrue(child.state == '4' or child.state == '5')
         child = children[1]
-        self.assertTrue(child.state == 4 or child.state == 5)
+        self.assertTrue(child.state == '4' or child.state == '5')
 
         # Node with state 4 should have two children with states 2 and 1
         children = self.node4.get_children()
         self.assertEqual(len(children), 2)
         child = children[0]
-        self.assertTrue(child.state == 2 or child.state == 1)
+        self.assertTrue(child.state == '2' or child.state == '1')
         child = children[1]
-        self.assertTrue(child.state == 2 or child.state == 1)
+        self.assertTrue(child.state == '2' or child.state == '1')
 
 
     def test_get_parent(self):
@@ -155,7 +150,7 @@ class TestTree(unittest.TestCase):
         self.assertEqual(self.root.get_parent(), None)
 
         # Node 4 should have node 3 as its parent
-        self.assertEqual(self.node4.get_parent().state, 3)
+        self.assertEqual(self.node4.get_parent().state, '3')
 
         # Node 3 should have "root" as its parent
         self.assertEqual(self.node3.get_parent().state, "root")
@@ -216,14 +211,14 @@ class OrderedTestTree(unittest.TestCase):
 
         # Find the child with ID 4
         children = self.node3.get_children()
-        if children[0].state == 4:
+        if children[0].state == '4':
             self.node4 = children[0]
         else:
             self.node4 = children[1]
 
         # Find the child with ID 5
         children = self.node3.get_children()
-        if children[0].state == 5:
+        if children[0].state == '5':
             self.node5 = children[0]
         else:
             self.node5 = children[1]
@@ -238,26 +233,26 @@ class OrderedTestTree(unittest.TestCase):
 
         # Verify node with state 3
         node3 = self.root.get_children()[0]
-        self.assertEqual(node3.state, 3)
+        self.assertEqual(node3.state, '3')
         self.assertEqual(len(node3.children), 2)
 
         # Verify node with state 4
         node4 = node3.get_children()[0]
-        self.assertEqual(node4.state, 4)
+        self.assertEqual(node4.state, '4')
         self.assertEqual(len(node4.children), 2)
-        self.assertEqual(node4.get_children()[0].state, 2)
-        self.assertEqual(node4.get_children()[1].state, 1)
+        self.assertEqual(node4.get_children()[0].state, '2')
+        self.assertEqual(node4.get_children()[1].state, '1')
 
 
     def test_get_nodes(self):
 
         nodes = self.root.get_nodes()
         self.assertEqual(nodes[0].state, "root")
-        self.assertEqual(nodes[1].state, 3)
-        self.assertEqual(nodes[2].state, 4)
-        self.assertEqual(nodes[3].state, 2)
-        self.assertEqual(nodes[4].state, 1)
-        self.assertEqual(nodes[5].state, 5)
+        self.assertEqual(nodes[1].state, '3')
+        self.assertEqual(nodes[2].state, '4')
+        self.assertEqual(nodes[3].state, '2')
+        self.assertEqual(nodes[4].state, '1')
+        self.assertEqual(nodes[5].state, '5')
 
 
     def test_get_tree_position(self):
@@ -270,9 +265,9 @@ class OrderedTestTree(unittest.TestCase):
 
     def test_get_right_most_leaf(self):
 
-        self.assertEqual(self.root.get_right_most_leaf().state, 5)
-        self.assertEqual(self.node3.get_right_most_leaf().state, 5)
-        self.assertEqual(self.node4.get_right_most_leaf().state, 1)
+        self.assertEqual(self.root.get_right_most_leaf().state, '5')
+        self.assertEqual(self.node3.get_right_most_leaf().state, '5')
+        self.assertEqual(self.node4.get_right_most_leaf().state, '1')
 
 
     def test_structural_equality(self):
