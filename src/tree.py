@@ -143,10 +143,11 @@ class TreeNode():
     def build_tree_from_string(self, tree_string):
         """Build a tree rooted from self using tree_string.
 
-        The string is a space separated serries of tokens or the string
-        "-1" (negative one).  Tokens describe the value of a child node.
-        Children are inserted using a depth traversal, with negative one
-        signalling a return to a parent node."""
+        The string is a space separated serries of tokens, the string
+        "-1" (negative one), or -2 (negative two).  Tokens describe the
+        value of a child node.  Children are inserted using a depth
+        traversal.  Negative one signals a return to a parent node.
+        Negative two signals a return to the root."""
 
         root = self
         current_node = root
@@ -154,12 +155,15 @@ class TreeNode():
         # Build the tree
         for state in tree_string.split():
 
-            if state != '-1':
-                # Initialize a child using state and descend into the child
-                current_node = current_node.append_child(state)
-            else:
+            if state == '-1':
                 # Move up a level in the tree
                 current_node = current_node.parent
+            elif state == '-2':
+                # Initialize a child using state and descend into the child
+                current_node = root
+            else:
+                # Initialize a child using state and descend into the child
+                current_node = current_node.append_child(state)
 
         # Require well formed build string that returns to start node
         assert current_node == root
