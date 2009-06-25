@@ -38,16 +38,31 @@
 
 import tree
 import freqt
+from optparse import OptionParser
 
 if __name__ == '__main__':
 
+    # Handle the command line
+    usage = "usage: %prog [options] tree_file minsup"
+    parser = OptionParser(usage)
+
+    (options, args) = parser.parse_args()
+
+    if len(args) != 2:
+        parser.error("Must specify tree_file and minsup")
+    (tree_file, minsup_str) = args
+    minsup = float(minsup_str)
+
     # Generate a tree
-    tree_string = "1 1 -1 2 -1 1 -1 2 -1 -1 1 1 -1 1 -1 2 -1 -1"
+    f = open(tree_file)
+    tree_string = f.readline()
+    f.close()
+
     root = tree.OrderedTreeNode("root")
     root.build_tree_from_string(tree_string)
 
     # Discover subtrees that occur with frequency greater than 0.2 in subtree
-    frequent_subtrees = freqt.freqt(root, 0.2)
+    frequent_subtrees = freqt.freqt(root, minsup)
 
     print "# ==== Size: Original Tree ====\n"
     print "digraph {\n%s}\n\n" % str(root)
