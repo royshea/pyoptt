@@ -120,6 +120,20 @@ class TestTree(unittest.TestCase):
                 tree_string)
 
 
+    def test_unrooted_build_tree_from_string(self):
+
+        tree_string = "3 4 2 -1 1 -1 -1 5 -1 -1"
+        local_root = tree.TreeNode.unrooted_build_tree_from_string(tree_string)
+        num_children = local_root.get_num_children()
+        self.assertEqual(num_children, 2)
+        num_nodes = local_root.get_num_nodes()
+        self.assertEqual(num_nodes, 5)
+
+        tree_string = "3 -1 -1"
+        self.assertRaises(AssertionError, tree.TreeNode.unrooted_build_tree_from_string,
+                tree_string)
+
+
     def test_get_children(self):
 
         # Root should have 3 as a child
@@ -287,6 +301,20 @@ class OrderedTestTree(unittest.TestCase):
 
         build_string = "root 3 4 2 -1 1 -1 -1 5 -1 -1 -1"
         self.assertEqual(self.root.build_string_from_tree(), build_string)
+
+
+    def test_unrooted_build_tree_from_string(self):
+
+        tree_string = "3 4 2 -1 1 -1 -1 5 -1 -1"
+        local_root = tree.OrderedTreeNode.unrooted_build_tree_from_string(tree_string)
+        num_children = local_root.get_num_children()
+        self.assertEqual(num_children, 2)
+        num_nodes = local_root.get_num_nodes()
+        self.assertEqual(num_nodes, 5)
+
+        tree_string = "3 -1 -1"
+        self.assertRaises(AssertionError, tree.OrderedTreeNode.unrooted_build_tree_from_string,
+                tree_string)
 
 
 if __name__ == '__main__':

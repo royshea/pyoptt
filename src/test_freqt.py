@@ -45,7 +45,7 @@ class TestFreqt(unittest.TestCase):
     def setUp(self):
 
         # Tree used throughout the tests
-        tree_string = "1 1 -1 2 -1 1 -1 2 -1 -1 1 1 -1 1 -1 2"
+        tree_string = "1 1 -1 2 -1 1 -1 2 -1 -1 1 1 -1 1 -1 2 -1 -1"
         self.root = tree.OrderedTreeNode("root")
         self.root.build_tree_from_string(tree_string)
 

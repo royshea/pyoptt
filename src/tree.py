@@ -167,6 +167,15 @@ class TreeNode():
         return root
 
 
+    @classmethod
+    def unrooted_build_tree_from_string(self, tree_string):
+        """Similar to build_tree_from_string but also creates the root."""
+
+        state = tree_string.split()
+        root = TreeNode(state[0])
+        return root.build_tree_from_string(" ".join(state[1:-1]))
+
+
     def __str__(self):
         """Write node child relations."""
         out_string = ""
@@ -283,3 +292,12 @@ class OrderedTreeNode(TreeNode):
             out_string += " " + child.build_string_from_tree()
         out_string += " -1"
         return out_string
+
+
+    @classmethod
+    def unrooted_build_tree_from_string(self, tree_string):
+        """OrderedTreeNode version of unrooted_build_tree_from_string."""
+
+        state = tree_string.split()
+        root = OrderedTreeNode(state[0])
+        return root.build_tree_from_string(" ".join(state[1:-1]))
