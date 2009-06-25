@@ -50,7 +50,10 @@ class TreeNode():
         """Create a new node with optional state."""
         self.parent = parent
         self.children = []
-        self.state = str(state)
+        if state:
+            self.state = str(state)
+        else:
+            self.state = None
         self.id = TreeNode.node_counter
         TreeNode.node_counter += 1
         return
@@ -150,16 +153,16 @@ class TreeNode():
 
         # Build the tree
         for state in tree_string.split():
-            assert state >= '-1'
 
             if state != '-1':
                 # Initialize a child using state and descend into the child
                 current_node = current_node.append_child(state)
-
             else:
                 # Move up a level in the tree
-                assert current_node != root
                 current_node = current_node.parent
+
+        # Require well formed build string that returns to start node
+        assert current_node == root
 
         return root
 

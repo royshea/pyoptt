@@ -42,7 +42,7 @@ import tree
 class TestTree(unittest.TestCase):
 
     def setUp(self):
-        tree_string = "3 4 2 -1 1 -1 -1 5"
+        tree_string = "3 4 2 -1 1 -1 -1 5 -1 -1"
         self.root = tree.OrderedTreeNode("root")
         self.root.build_tree_from_string(tree_string)
 
@@ -101,7 +101,7 @@ class TestTree(unittest.TestCase):
 
     def test_build_tree_from_string(self):
 
-        tree_string = "3 4 2 -1 1 -1 -1 5"
+        tree_string = "3 4 2 -1 1 -1 -1 5 -1 -1"
         local_root = tree.TreeNode("local_root")
         local_root.build_tree_from_string(tree_string)
         num_children = local_root.get_num_children()
@@ -202,7 +202,7 @@ class OrderedTestTree(unittest.TestCase):
 
     def setUp(self):
 
-        tree_string = "3 4 2 -1 1 -1 -1 5"
+        tree_string = "3 4 2 -1 1 -1 -1 5 -1 -1"
         self.root = tree.OrderedTreeNode("root")
         self.root.build_tree_from_string(tree_string)
 
@@ -272,7 +272,7 @@ class OrderedTestTree(unittest.TestCase):
 
     def test_structural_equality(self):
 
-        tree_string = "3 4 2 -1 1 -1 -1 5"
+        tree_string = "3 4 2 -1 1 -1 -1 5 -1 -1"
 
         r1 = tree.OrderedTreeNode("root")
         r2 = tree.OrderedTreeNode("root")
