@@ -158,5 +158,13 @@ class TestFreqt(unittest.TestCase):
         self.assertEqual(len(c3), 1)
 
 
+    def test_freqt(self):
+
+        frequent_subtrees = freqt.freqt(self.root, 0.2)
+        self.assertEqual(len(frequent_subtrees), 4)
+
+        frequent_subtrees = freqt.freqt(self.root, 0.15)
+        self.assertEqual(len(frequent_subtrees), 5)
+
 if __name__ == '__main__':
     unittest.main()

@@ -140,3 +140,21 @@ def expand_trees(t, candidates, minsup, token_space):
         if len(rmos) > minsup * num_nodes:
             minsup_frequent[cs] = rmos
     return minsup_frequent
+
+
+def freqt(t, minsup):
+    """Find subtrees induced on t with at least minsup support."""
+
+    # Store frequent subtrees indexed by tree size
+    frequent_subtrees = {}
+    subtree_size = 1
+    frequent_subtrees[subtree_size] = get_c1(t, minsup)
+    token_space = [sub_str.split()[0] for sub_str in frequent_subtrees[subtree_size].keys()]
+
+    while len(frequent_subtrees[subtree_size]) > 0:
+        expanded = expand_trees(t, frequent_subtrees[subtree_size],
+                minsup, token_space)
+        subtree_size += 1
+        frequent_subtrees[subtree_size] = expanded
+
+    return frequent_subtrees
