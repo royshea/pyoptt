@@ -100,3 +100,43 @@ def update_rmo(t, rmos, p, l):
     rmo_new = [child for child in children if child.state == l]
 
     return rmo_new
+
+
+def expand_trees(t, candidates, minsup, token_space):
+    """Expand candidates on data tree.
+
+    Examine the subtrees within candidates.  Expand each subtree using
+    each token from token_space.  For each such expanded subtree, see if
+    it appears with frequency greater than minsup within the data tree
+    t.
+    """
+
+    c_new = {}
+
+    # For each subtree
+    for (subtree_string, rmos) in candidates.items():
+
+        # Construct subtree, locate right most leaf, and its depth
+        subtree = tree.OrderedTreeNode.unrooted_build_tree_from_string(subtree_string)
+        right_most_leaf = subtree.get_right_most_leaf()
+        rml_depth = right_most_leaf.get_depth()
+
+        # For each parent_distance (distance from rml) and token combination
+        for parent_distance in range(rml_depth + 1):
+            for token in token_space:
+
+                # Create a larger candidate subtree and locate its rmos
+                # within the tree t.
+                candidate = pl_expand(subtree, parent_distance, token)
+                candidate_string = candidate.build_string_from_tree()
+                assert candidate_string not in c_new
+                c_new[candidate_string] = update_rmo(t, rmos, parent_distance, token)
+
+    # Only keep track of the tokens that occur with frequency greater
+    # than minsup.
+    num_nodes = t.get_num_nodes()
+    minsup_frequent = {}
+    for (cs, rmos) in c_new.items():
+        if len(rmos) > minsup * num_nodes:
+            minsup_frequent[cs] = rmos
+    return minsup_frequent

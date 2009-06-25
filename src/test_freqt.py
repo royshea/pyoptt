@@ -143,5 +143,20 @@ class TestFreqt(unittest.TestCase):
         self.assertEqual(len(rmo_112_p1), 3)
 
 
+    def test_expand_trees(self):
+
+        # c1 = {1:[1, 2, 4, 6, 7, 8], 2:[3, 5, 9]}
+        c1 = freqt.get_c1(self.root, 0.15)
+
+        c2 = freqt.expand_trees(self.root, c1, 0.15, ['1', '2', 'root'])
+        self.assertEqual(len(c2), 2)
+
+        c3 = freqt.expand_trees(self.root, c2, 0.15, ['1', '2', 'root'])
+        self.assertEqual(len(c3), 2)
+
+        c3 = freqt.expand_trees(self.root, c2, 0.2, ['1', '2', 'root'])
+        self.assertEqual(len(c3), 1)
+
+
 if __name__ == '__main__':
     unittest.main()
