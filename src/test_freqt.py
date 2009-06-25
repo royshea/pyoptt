@@ -43,24 +43,37 @@ import freqt
 class TestFreqt(unittest.TestCase):
 
     def setUp(self):
+
+        # Tree used throughout the tests
         tree_string = "1 1 -1 2 -1 1 -1 2 -1 -1 1 1 -1 1 -1 2"
         self.root = tree.OrderedTreeNode("root")
         self.root.build_tree_from_string(tree_string)
 
+        # Build strings for subtrees
+        self.subtree_1_str = "1 -1"
+        self.subtree_2_str = "2 -1"
+        self.subtree_r_str = "root -1"
+
+
     def test_get_c1(self):
+
         c1 = freqt.get_c1(self.root, 0.05)
         self.assertEqual(len(c1), 3)
-        self.assertTrue(1 in c1.keys())
-        self.assertEqual(len(c1[1]), 6)
-        self.assertTrue(2 in c1.keys())
-        self.assertEqual(len(c1[2]), 3)
-        self.assertTrue("root" in c1.keys())
-        self.assertEqual(len(c1["root"]), 1)
+
+        self.assertTrue(self.subtree_1_str in c1.keys())
+        self.assertEqual(len(c1[self.subtree_1_str]), 6)
+
+        self.assertTrue(self.subtree_2_str in c1.keys())
+        self.assertEqual(len(c1[self.subtree_2_str]), 3)
+
+        self.assertTrue(self.subtree_r_str in c1.keys())
+        self.assertEqual(len(c1[self.subtree_r_str]), 1)
 
         c1 = freqt.get_c1(self.root, 0.15)
         self.assertEqual(len(c1), 2)
-        self.assertTrue(1 in c1.keys())
-        self.assertTrue(2 in c1.keys())
+
+        self.assertTrue(self.subtree_1_str in c1.keys())
+        self.assertTrue(self.subtree_2_str in c1.keys())
 
         c1 = freqt.get_c1(self.root, 0.8)
         self.assertEqual(len(c1), 0)
@@ -70,17 +83,17 @@ class TestFreqt(unittest.TestCase):
 
         tree0 = freqt.pl_expand(self.root, 0, 3)
         self.assertEqual(tree0.get_num_nodes(), 11)
-        self.assertEqual(tree0.get_nodes()[10].state, 3)
-        self.assertEqual(tree0.get_nodes()[10].get_parent().state, 2)
+        self.assertEqual(tree0.get_nodes()[10].state, '3')
+        self.assertEqual(tree0.get_nodes()[10].get_parent().state, '2')
 
         tree1 = freqt.pl_expand(self.root, 1, 3)
         self.assertEqual(tree1.get_num_nodes(), 11)
-        self.assertEqual(tree1.get_nodes()[10].state, 3)
-        self.assertEqual(tree1.get_nodes()[10].get_parent().state, 1)
+        self.assertEqual(tree1.get_nodes()[10].state, '3')
+        self.assertEqual(tree1.get_nodes()[10].get_parent().state, '1')
 
         tree2 = freqt.pl_expand(self.root, 2, 3)
         self.assertEqual(tree2.get_num_nodes(), 11)
-        self.assertEqual(tree2.get_nodes()[10].state, 3)
+        self.assertEqual(tree2.get_nodes()[10].state, '3')
         self.assertEqual(tree2.get_nodes()[10].get_parent().state, "root")
 
 
@@ -90,43 +103,43 @@ class TestFreqt(unittest.TestCase):
         c1 = freqt.get_c1(self.root, 0.15)
 
         # Test all possible extensions off of c1.
-        rmo_1 = c1[1]
-        rmo_2 = c1[2]
+        rmo_1 = c1[self.subtree_1_str]
+        rmo_2 = c1[self.subtree_2_str]
 
-        rmo_11 = freqt.update_rmo(self.root, rmo_1, 0, 1)
+        rmo_11 = freqt.update_rmo(self.root, rmo_1, 0, '1')
         self.assertEqual(len(rmo_11), 4)
 
-        rmo_12 = freqt.update_rmo(self.root, rmo_1, 0, 2)
+        rmo_12 = freqt.update_rmo(self.root, rmo_1, 0, '2')
         self.assertEqual(len(rmo_12), 3)
 
-        rmo_13 = freqt.update_rmo(self.root, rmo_1, 0, 3)
+        rmo_13 = freqt.update_rmo(self.root, rmo_1, 0, '3')
         self.assertEqual(len(rmo_13), 0)
 
-        rmo_21 = freqt.update_rmo(self.root, rmo_2, 0, 1)
+        rmo_21 = freqt.update_rmo(self.root, rmo_2, 0, '1')
         self.assertEqual(len(rmo_21), 0)
 
-        rmo_22 = freqt.update_rmo(self.root, rmo_2, 0, 2)
+        rmo_22 = freqt.update_rmo(self.root, rmo_2, 0, '2')
         self.assertEqual(len(rmo_22), 0)
 
-        rmo_23 = freqt.update_rmo(self.root, rmo_2, 0, 3)
+        rmo_23 = freqt.update_rmo(self.root, rmo_2, 0, '3')
         self.assertEqual(len(rmo_23), 0)
 
-        rmo_11 = freqt.update_rmo(self.root, rmo_1, 0, 1)
+        rmo_11 = freqt.update_rmo(self.root, rmo_1, 0, '1')
         self.assertEqual(len(rmo_11), 4)
 
         # Test extensions off of rmo_11.  There should be no p=0
         # extensions, but a few from p=1.
 
-        rmo_111_p0 = freqt.update_rmo(self.root, rmo_11, 0, 1)
+        rmo_111_p0 = freqt.update_rmo(self.root, rmo_11, 0, '1')
         self.assertEqual(len(rmo_111_p0), 0)
 
-        rmo_111_p1 = freqt.update_rmo(self.root, rmo_11, 1, 1)
+        rmo_111_p1 = freqt.update_rmo(self.root, rmo_11, 1, '1')
         self.assertEqual(len(rmo_111_p1), 2)
 
-        rmo_112_p0 = freqt.update_rmo(self.root, rmo_11, 0, 2)
+        rmo_112_p0 = freqt.update_rmo(self.root, rmo_11, 0, '2')
         self.assertEqual(len(rmo_112_p0), 0)
 
-        rmo_112_p1 = freqt.update_rmo(self.root, rmo_11, 1, 2)
+        rmo_112_p1 = freqt.update_rmo(self.root, rmo_11, 1, '2')
         self.assertEqual(len(rmo_112_p1), 3)
 
 

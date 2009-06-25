@@ -41,23 +41,24 @@ import copy
 import sets
 
 def get_c1(root, minsup):
-    """Find the right most leaf of occurances of minsup frequent 1-itemsets."""
+    """Find the right most leaf of occurrences of minsup frequent 1-itemsets."""
 
     num_nodes = root.get_num_nodes()
 
-    # Track the number of times each token appears as the state of a
-    # node within the tree rooted at root.
+    # Track the number of times each size one subtree appears as the
+    # state of a node within the tree rooted at root.
     rmo = {}
     for node in root.get_nodes():
-        token = node.state
-        rmo[token] = rmo.setdefault(token, []) + [node]
+        subtree = tree.OrderedTreeNode(node.state)
+        subtree_string = subtree.build_string_from_tree()
+        rmo[subtree_string] = rmo.setdefault(subtree_string, []) + [node]
 
-    # Only keep track of the tokens that occure with frequency greater
+    # Only keep track of the tokens that occur with frequency greater
     # than minsup.
     minsup_frequent = {}
-    for (token, rmos) in rmo.items():
+    for (sts, rmos) in rmo.items():
         if len(rmos) > minsup * num_nodes:
-            minsup_frequent[token] = rmos
+            minsup_frequent[sts] = rmos
     return minsup_frequent
 
 
@@ -77,7 +78,7 @@ def pl_expand(t, p, l):
 def update_rmo(t, rmos, p, l):
     """Update the RMO information for a tree."""
 
-    # Get nodes that will be tested for exansion
+    # Get nodes that will be tested for expansion
     children = []
     for rmo in rmos:
         pth_parent = rmo.get_pth_parent(p)
@@ -92,7 +93,7 @@ def update_rmo(t, rmos, p, l):
             index = pth_parent.get_children().index(p_less_one_parent)
             children += pth_parent.get_children()[index+1:]
 
-    # Uniquify the children to prevent duplicate checks
+    # Unique-ify the children to prevent duplicate checks
     children = list(sets.Set(children))
 
     # Try l-expanding each node
