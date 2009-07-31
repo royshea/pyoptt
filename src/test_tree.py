@@ -126,6 +126,7 @@ class TestTree(unittest.TestCase):
         local_root = tree.TreeNode.unrooted_build_tree_from_string(tree_string)
         num_children = local_root.get_num_children()
         self.assertEqual(num_children, 2)
+        local_root.lock_tree()
         num_nodes = local_root.get_num_nodes()
         self.assertEqual(num_nodes, 5)
 
@@ -172,6 +173,9 @@ class TestTree(unittest.TestCase):
 
     def test_get_pth_parent(self):
 
+        self.assertRaises(AssertionError, self.root.get_tree_position)
+        self.root.lock_tree()
+
         self.assertEqual(self.root.get_pth_parent(0), self.root)
         self.assertRaises(AssertionError, self.root.get_pth_parent, 1)
 
@@ -187,6 +191,8 @@ class TestTree(unittest.TestCase):
 
     def test_get_depth(self):
 
+        self.assertRaises(AssertionError, self.root.get_tree_position)
+        self.root.lock_tree()
         self.assertEqual(self.root.get_depth(), 0)
         self.assertEqual(self.node3.get_depth(), 1)
         self.assertEqual(self.node4.get_depth(), 2)
@@ -201,6 +207,8 @@ class TestTree(unittest.TestCase):
 
     def test_get_num_nodes(self):
 
+        self.assertRaises(AssertionError, self.root.get_tree_position)
+        self.root.lock_tree()
         self.assertEqual(self.root.get_num_nodes(), 6)
         self.assertEqual(self.node3.get_num_nodes(), 5)
         self.assertEqual(self.node4.get_num_nodes(), 3)
@@ -271,6 +279,8 @@ class OrderedTestTree(unittest.TestCase):
 
     def test_get_tree_position(self):
 
+        self.assertRaises(AssertionError, self.root.get_tree_position)
+        self.root.lock_tree()
         self.assertEqual(self.root.get_tree_position(), 0)
         self.assertEqual(self.node3.get_tree_position(), 1)
         self.assertEqual(self.node4.get_tree_position(), 2)
@@ -307,6 +317,7 @@ class OrderedTestTree(unittest.TestCase):
 
         tree_string = "3 4 2 -1 1 -1 -1 5 -1 -1"
         local_root = tree.OrderedTreeNode.unrooted_build_tree_from_string(tree_string)
+        local_root.lock_tree()
         num_children = local_root.get_num_children()
         self.assertEqual(num_children, 2)
         num_nodes = local_root.get_num_nodes()

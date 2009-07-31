@@ -56,6 +56,15 @@ class TreeNode():
             self.state = None
         self.id = TreeNode.node_counter
         TreeNode.node_counter += 1
+
+        # Nodes contain tree level state.  This state is only valid when
+        # the entire tree is in a locked state, indicating that no
+        # changes can be made to the tree and thus the tree levele data
+        # in each node is valid.
+        self.locked = False
+        self.depth = None
+        self.num_successors = None
+
         return
 
 
@@ -65,8 +74,66 @@ class TreeNode():
         return
 
 
+    def _set_depth(self, depth):
+        """Set depths of nodes."""
+        self.depth = depth
+        for child in self.get_children():
+            child._set_depth(depth+1)
+        return
+
+
+    def _set_num_successors(self):
+        """Set the number of successors to a given node."""
+        child_successors = [child._set_num_successors() for child in self.get_children()]
+        self.num_successors = sum(child_successors) + 1
+        return self.num_successors
+
+
+    def _lock(self):
+        """Lock a node and its children."""
+        self.locked = True
+        for child in self.get_children():
+            child._lock()
+
+
+    def lock_tree(self):
+        """Lock the tree.
+
+        Calculate state for each node that is non-local (ie. number of
+        nodes rooted from current location) and prevent future changes
+        to the tree.  Any future changes will first require unlocking
+        the tree, which invaladets non-local data.
+        """
+        root = self.get_root()
+        root._set_depth(0)
+        root._set_num_successors()
+        root._lock()
+        return
+
+
+    def _unlock(self):
+        """Unlock a node and its children."""
+        self.locked = False
+        self.depth = None
+        self.successors = None
+        for child in self.get_children():
+            child._unlock()
+
+
+    def unlock_tree(self):
+        """Unlock the tree.
+
+        Enable extending or modifying the tree.  This invalidates all
+        non-local node data.
+        """
+        root = self.get_root()
+        root._unlock()
+        return
+
+
     def append_child(self, state=None):
         """Create a new child node of self with optional state."""
+        assert self.locked == False, "Must first unlock tree.\n"
         child = TreeNode(state, self)
         self._store_child(child)
         return child
@@ -74,7 +141,7 @@ class TreeNode():
 
     def get_num_children(self):
         """Return the number of children of a node."""
-        return len(self.children)
+        return len(self.get_children())
 
 
     def get_children(self):
@@ -95,6 +162,7 @@ class TreeNode():
         root of the tree.
         """
 
+        assert self.locked == True, "Must first lock tree.\n"
         assert p <= self.get_depth()
         if p == 0:
             return self
@@ -107,10 +175,8 @@ class TreeNode():
 
         The root node is defined to have depth 0.
         """
-        if self.parent == None:
-            return 0
-        else:
-            return self.parent.get_depth() + 1
+        assert self.locked == True, "Must first lock tree.\n"
+        return self.depth
 
 
     def get_root(self):
@@ -125,10 +191,10 @@ class TreeNode():
             return self.parent.get_root()
 
 
-    def get_num_nodes(self):
+    def get_num_nodes(self, depth=0):
         """Return the number of nodes rooted under self."""
-        successors = [child.get_num_nodes() for child in self.get_children()]
-        return sum(successors) + 1
+        assert self.locked == True, "Must first lock tree.\n"
+        return self.num_successors
 
 
     def get_nodes(self):
@@ -149,6 +215,7 @@ class TreeNode():
         traversal.  Negative one signals a return to a parent node.
         Negative two signals a return to the root."""
 
+        assert self.locked == False, "Must first unlock tree.\n"
         root = self
         current_node = root
 
@@ -159,7 +226,7 @@ class TreeNode():
                 # Move up a level in the tree
                 current_node = current_node.parent
             elif state == '-2':
-                # Initialize a child using state and descend into the child
+                # Reset to root node
                 current_node = root
             else:
                 # Initialize a child using state and descend into the child
@@ -185,7 +252,7 @@ class TreeNode():
         out_string = ""
         out_string += "node_%d_%s [label=%s]\n" % (self.id, str(self.state),
                 str(self.state))
-        for child in self.children:
+        for child in self.get_children():
             out_string += str(child)
             out_string += "node_%d_%s -> node_%d_%s\n" % (self.id, self.state,
                     child.id, child.state)
@@ -208,7 +275,9 @@ class OrderedTreeNode(TreeNode):
 
         Positions are determined based on a depth first pre-ordering.
         """
+        assert self.locked == True, "Must first lock tree.\n"
         return self.position
+
 
     def _store_child(self, child, index):
         """Insert child as the index-th child under self.
@@ -227,19 +296,36 @@ class OrderedTreeNode(TreeNode):
         Positions are determined based on a depth first pre-ordering
         with the root node at position 0.
         """
-
         root = self.get_root()
         nodes = root.get_nodes()
         for (node, position) in zip(nodes, range(len(nodes))):
             node.position = position
 
 
+    def _clear_positions(self):
+        """Clear position information."""
+        self.position = None
+        for child in self.get_children():
+            child._clear_positions()
+
+
+    def unlock_tree(self):
+        TreeNode.unlock_tree(self)
+        root = self.get_root()
+        root._clear_positions()
+
+
+    def lock_tree(self):
+        TreeNode.lock_tree(self)
+        self._update_positions()
+
+
     def append_child(self, state=None):
         """Create a new child node of self with optional state and
         insert it after all other children."""
+        assert self.locked == False, "Must first unlock tree.\n"
         child = OrderedTreeNode(state, self)
-        self._store_child(child, len(self.children))
-        self._update_positions()
+        self._store_child(child, len(self.get_children()))
         return child
 
 
@@ -256,10 +342,10 @@ class OrderedTreeNode(TreeNode):
 
     def get_right_most_leaf(self):
         """Return the right most leaf of the tree rooted at self."""
-        if self.children == []:
+        if self.get_children() == []:
             return self
         else:
-            return self.children[-1].get_right_most_leaf()
+            return self.get_children()[-1].get_right_most_leaf()
 
 
     def structural_equality(self, other):
@@ -270,8 +356,8 @@ class OrderedTreeNode(TreeNode):
 
         # Ensure that the current nodes are equal
         if self.state == other.state and \
-                len(self.children) == len(other.children):
-            for (self_child, other_child) in zip(self.children,
+                len(self.get_children()) == len(other.children):
+            for (self_child, other_child) in zip(self.get_children(),
                     other.children):
                 if self_child.structural_equality(other_child): continue
                 else: return False
