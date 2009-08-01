@@ -48,6 +48,7 @@ class TestFreqt(unittest.TestCase):
         tree_string = "1 1 -1 2 -1 1 -1 2 -1 -1 1 1 -1 1 -1 2 -1 -1"
         self.root = tree.OrderedTreeNode("root")
         self.root.build_tree_from_string(tree_string)
+        self.root.lock_tree()
 
         # Build strings for subtrees
         self.subtree_1_str = "1 -1"
@@ -82,16 +83,19 @@ class TestFreqt(unittest.TestCase):
     def test_pl_expand(self):
 
         tree0 = freqt.pl_expand(self.root, 0, 3)
+        tree0.lock_tree()
         self.assertEqual(tree0.get_num_nodes(), 11)
         self.assertEqual(tree0.get_nodes()[10].state, '3')
         self.assertEqual(tree0.get_nodes()[10].get_parent().state, '2')
 
         tree1 = freqt.pl_expand(self.root, 1, 3)
+        tree1.lock_tree()
         self.assertEqual(tree1.get_num_nodes(), 11)
         self.assertEqual(tree1.get_nodes()[10].state, '3')
         self.assertEqual(tree1.get_nodes()[10].get_parent().state, '1')
 
         tree2 = freqt.pl_expand(self.root, 2, 3)
+        tree2.lock_tree()
         self.assertEqual(tree2.get_num_nodes(), 11)
         self.assertEqual(tree2.get_nodes()[10].state, '3')
         self.assertEqual(tree2.get_nodes()[10].get_parent().state, "root")
