@@ -76,9 +76,13 @@ class TreeNode():
 
     def _set_depth(self, depth):
         """Set depths of nodes."""
-        self.depth = depth
-        for child in self.get_children():
-            child._set_depth(depth+1)
+        root = self.get_root()
+        work_list = [(root, 0)]
+        while work_list:
+            (node, depth) = work_list.pop()
+            node.depth = depth
+            for child in node.get_children():
+                work_list.append((child, depth + 1))
         return
 
 
