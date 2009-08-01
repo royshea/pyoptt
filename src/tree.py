@@ -238,6 +238,17 @@ class TreeNode():
         return root
 
 
+    def print_tree(self):
+        """Print the rooted tree."""
+        work_list = [self]
+        out_string = ""
+        while work_list:
+            node = work_list.pop()
+            out_string += str(node)
+            work_list += node.get_children()
+        return out_string
+
+
     @classmethod
     def unrooted_build_tree_from_string(self, tree_string):
         """Similar to build_tree_from_string but also creates the root."""
@@ -252,10 +263,6 @@ class TreeNode():
         out_string = ""
         out_string += "node_%d_%s [label=%s]\n" % (self.id, str(self.state),
                 str(self.state))
-        for child in self.get_children():
-            out_string += str(child)
-            out_string += "node_%d_%s -> node_%d_%s\n" % (self.id, self.state,
-                    child.id, child.state)
         return out_string
 
 
