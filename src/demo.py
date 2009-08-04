@@ -46,6 +46,10 @@ if __name__ == '__main__':
     usage = "usage: %prog [options] tree_file minsup"
     parser = OptionParser(usage)
 
+    parser.add_option("-t", "--timeout", dest="timeout", type="int",
+            default="0", help="Bounds the maximum time that any call to" +
+            "frequent_subtrees can take.  Default is no timeout.")
+
     (options, args) = parser.parse_args()
 
     if len(args) != 2:
@@ -62,7 +66,7 @@ if __name__ == '__main__':
     root.build_tree_from_string(tree_string)
 
     # Discover subtrees that occur with frequency greater than 0.2 in subtree
-    frequent_subtrees = freqt.freqt(root, minsup)
+    frequent_subtrees = freqt.freqt(root, minsup, options.timeout)
 
     print "# ==== Size: Original Tree ====\n"
     print "digraph {\n%s}\n\n" % root.print_tree()

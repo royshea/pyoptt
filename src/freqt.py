@@ -39,6 +39,7 @@
 import tree
 import copy
 import sets
+import signal
 
 def get_c1(root, minsup):
     """Find the right most leaf of occurrences of minsup frequent 1-itemsets."""
@@ -144,9 +145,22 @@ def expand_trees(t, candidates, minsup, token_space):
     return minsup_frequent
 
 
-def freqt(t, minsup):
+class FreqtTimeout(Exception):
+    """Minimal error used when the Freqt computation takes too long."""
+    pass
+
+
+def alarm_handler(signum, frame):
+    raise FreqtTimeout
+
+
+def freqt(t, minsup, timeout=0):
     """Find subtrees induced on t with at least minsup support."""
 
+    # Setup for the function
+    signal.signal(signal.SIGALRM, alarm_handler)
+
+    # Lock the tree to calculate per-node data used by analysis
     t.lock_tree()
 
     # Store frequent subtrees indexed by tree size
@@ -156,8 +170,17 @@ def freqt(t, minsup):
     token_space = [sub_str.split()[0] for sub_str in frequent_subtrees[subtree_size].keys()]
 
     while len(frequent_subtrees[subtree_size]) > 0:
-        expanded = expand_trees(t, frequent_subtrees[subtree_size],
-                minsup, token_space)
+        signal.alarm(timeout)
+        try:
+            expanded = expand_trees(t, frequent_subtrees[subtree_size],
+                    minsup, token_space)
+        except FreqtTimeout:
+            # On timeout remove the last potentially incomplete data for
+            # trees of size subtree_size.  Return what has been
+            # computed.
+            break
+
+        signal.alarm(0)
         subtree_size += 1
         frequent_subtrees[subtree_size] = expanded
 
