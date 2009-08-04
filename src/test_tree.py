@@ -216,6 +216,8 @@ class TestTree(unittest.TestCase):
 
     def test_get_nodes(self):
 
+        self.assertRaises(AssertionError, self.root.get_nodes)
+        self.root.lock_tree()
         nodes = self.root.get_nodes()
         self.assertEqual(len(nodes), 6)
 
@@ -268,6 +270,8 @@ class OrderedTestTree(unittest.TestCase):
 
     def test_get_nodes(self):
 
+        self.assertRaises(AssertionError, self.root.get_nodes)
+        self.root.lock_tree()
         nodes = self.root.get_nodes()
         self.assertEqual(nodes[0].state, "root")
         self.assertEqual(nodes[1].state, '3')

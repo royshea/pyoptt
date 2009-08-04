@@ -49,6 +49,10 @@ class TreeNode():
     def __init__(self, state=None, parent=None):
         """Create a new node with optional state."""
         self.parent = parent
+        if parent:
+            self.root = self.parent.root
+        else:
+            self.root = self
         self.children = []
         if state:
             self.state = str(state)
@@ -63,7 +67,8 @@ class TreeNode():
         # in each node is valid.
         self.locked = False
         self.depth = None
-        self.num_successors = None
+        self.successors = None
+        self.successors_visited = False
 
         return
 
@@ -74,7 +79,7 @@ class TreeNode():
         return
 
 
-    def _set_depth(self, depth):
+    def _set_depth(self):
         """Set depths of nodes."""
         root = self.get_root()
         work_list = [(root, 0)]
@@ -86,18 +91,55 @@ class TreeNode():
         return
 
 
-    def _set_num_successors(self):
-        """Set the number of successors to a given node."""
-        child_successors = [child._set_num_successors() for child in self.get_children()]
-        self.num_successors = sum(child_successors) + 1
-        return self.num_successors
+    def _set_successors(self):
+        """Set the successors to a given node.
+
+        This is a cute algorithm that sets the pre-order successors of
+        each node in a tree using one traversal and only O(branching *
+        depth) memory.  Although that memory number is ignoring the
+        space required by the calculated result, which could be
+        O(num_nodes * num_nodes).
+
+        Basic strategy is to use a stack to do a depth first traversal
+        of the tree.  When a node is popped from the stack, a special
+        marked version of the node is popped back on followed by its
+        children.  When a marked version of a node is popped from the
+        stack, it must be the case that the children are done, so its
+        successors can be calculated from them.
+
+        This algorithm assumes that get_children returns children in
+        order.
+        """
+        root = self.get_root()
+        work_list = [root]
+        while work_list:
+            node = work_list.pop()
+            if node.successors_visited == True:
+                # Set successor data for current node.  Since this is
+                # the second time visiting this node, it must be the
+                # case that the successors of children has been
+                # computed.
+                node.successors = []
+                for child in node.get_children():
+                    node.successors.append(child)
+                    node.successors += child.successors
+            else:
+                # Mark node as visited, replace on stack, add children
+                # to stack.
+                node.successors_visited = True
+                work_list.append(node)
+                work_list += node.get_children()
+        return
 
 
     def _lock(self):
         """Lock a node and its children."""
-        self.locked = True
-        for child in self.get_children():
-            child._lock()
+        root = self.get_root()
+        work_list = [root]
+        while work_list:
+            node = work_list.pop()
+            work_list += node.get_children()
+            node.locked = True
 
 
     def lock_tree(self):
@@ -108,20 +150,10 @@ class TreeNode():
         to the tree.  Any future changes will first require unlocking
         the tree, which invaladets non-local data.
         """
-        root = self.get_root()
-        root._set_depth(0)
-        root._set_num_successors()
-        root._lock()
+        self._set_depth()
+        self._set_successors()
+        self._lock()
         return
-
-
-    def _unlock(self):
-        """Unlock a node and its children."""
-        self.locked = False
-        self.depth = None
-        self.successors = None
-        for child in self.get_children():
-            child._unlock()
 
 
     def unlock_tree(self):
@@ -131,7 +163,15 @@ class TreeNode():
         non-local node data.
         """
         root = self.get_root()
-        root._unlock()
+        work_list = [root]
+        while work_list:
+            node = work_list.pop()
+            work_list += node.get_children()
+            node.locked = False
+            node.depth = None
+            node.successors = None
+            node.successors_visited = False
+            node.parent = None
         return
 
 
@@ -189,25 +229,20 @@ class TreeNode():
         The root is assumed to be the only node in the tree that has no
         parent.
         """
-        if self.parent == None:
-            return self
-        else:
-            return self.parent.get_root()
+        return self.root
 
 
     def get_num_nodes(self, depth=0):
-        """Return the number of nodes rooted under self."""
+        """Return the number of nodes rooted under self (including self)."""
         assert self.locked == True, "Must first lock tree.\n"
-        return self.num_successors
+        return len(self.successors) + 1
 
 
     def get_nodes(self):
-        """Return the list of nodes in the tree rooted under self."""
-        nodes = []
-        for child in self.get_children():
-            nodes += child.get_nodes()
-        nodes.append(self)
-        return nodes
+        """Return the list of nodes in the tree rooted under self
+        (including self)."""
+        assert self.locked == True, "Must first lock tree.\n"
+        return [self] + self.successors
 
 
     def build_tree_from_string(self, tree_string):
@@ -273,7 +308,8 @@ class TreeNode():
 class OrderedTreeNode(TreeNode):
     """Node within an ordered tree.
 
-    An ordered tree defines an ordering over each child of a node.
+    An ordered tree assumes a pre-ordering and a "left to right"
+    ordering of children.
     """
 
     def __init__(self, state=None, parent=None):
@@ -313,17 +349,60 @@ class OrderedTreeNode(TreeNode):
             node.position = position
 
 
+    def _set_successors(self):
+        """Set the successors to a given node.
+
+        This is a cute algorithm that sets the pre-order successors of
+        each node in a tree using one traversal and only O(branching *
+        depth) memory.  Although that memory number is ignoring the
+        space required by the calculated result, which could be
+        O(num_nodes * num_nodes).
+
+        Basic strategy is to use a stack to do a depth first traversal
+        of the tree.  When a node is popped from the stack, a special
+        marked version of the node is popped back on followed by its
+        children.  When a marked version of a node is popped from the
+        stack, it must be the case that the children are done, so its
+        successors can be calculated from them.
+
+        This algorithm assumes that get_children returns children in
+        order.
+        """
+        root = self.get_root()
+        work_list = [root]
+        while work_list:
+            node = work_list.pop()
+            if node.successors_visited == True:
+                # Set successor data for current node.  Since this is
+                # the second time visiting this node, it must be the
+                # case that the successors of children has been
+                # computed.
+                node.successors = []
+                for child in node.get_children():
+                    node.successors.append(child)
+                    node.successors += child.successors
+            else:
+                # Mark node as visited, replace on stack, add children
+                # to stack.
+                node.successors_visited = True
+                work_list.append(node)
+                work_list += node.get_children()
+        return
+
+
     def _clear_positions(self):
         """Clear position information."""
-        self.position = None
-        for child in self.get_children():
-            child._clear_positions()
+        root = self.get_root()
+        work_list = [root]
+        while work_list:
+            node = work_list.pop()
+            work_list += node.get_children()
+            node.position = None
 
 
     def unlock_tree(self):
         TreeNode.unlock_tree(self)
-        root = self.get_root()
-        root._clear_positions()
+        self._clear_positions()
 
 
     def lock_tree(self):
@@ -338,17 +417,6 @@ class OrderedTreeNode(TreeNode):
         child = OrderedTreeNode(state, self)
         self._store_child(child, len(self.get_children()))
         return child
-
-
-    def get_nodes(self):
-        """Return the list of nodes in the tree rooted under self.
-
-        List is gaunted to be in depth first pre-order.
-        """
-        nodes = [self]
-        for child in self.get_children():
-            nodes += child.get_nodes()
-        return nodes
 
 
     def get_right_most_leaf(self):
