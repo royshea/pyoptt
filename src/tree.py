@@ -49,21 +49,25 @@ class TreeNode():
     def __init__(self, state=None, parent=None):
         """Create a new node with optional state."""
         self.parent = parent
+
+        self.ancestors = [self]
         if parent:
-            self.root = self.parent.root
-        else:
-            self.root = self
+            self.ancestors += self.parent.ancestors
+
         self.children = []
+
         if state:
             self.state = str(state)
         else:
             self.state = None
+
         self.id = TreeNode.node_counter
+
         TreeNode.node_counter += 1
 
         # Nodes contain tree level state.  This state is only valid when
         # the entire tree is in a locked state, indicating that no
-        # changes can be made to the tree and thus the tree levele data
+        # changes can be made to the tree and thus the tree level data
         # in each node is valid.
         self.locked = False
         self.depth = None
@@ -148,7 +152,7 @@ class TreeNode():
         Calculate state for each node that is non-local (ie. number of
         nodes rooted from current location) and prevent future changes
         to the tree.  Any future changes will first require unlocking
-        the tree, which invaladets non-local data.
+        the tree, which invalidates non-local data.
         """
         self._set_depth()
         self._set_successors()
@@ -205,13 +209,7 @@ class TreeNode():
         if p is greater than depth of self, since this would pass the
         root of the tree.
         """
-
-        assert self.locked == True, "Must first lock tree.\n"
-        assert p <= self.get_depth()
-        if p == 0:
-            return self
-        else:
-            return self.parent.get_pth_parent(p-1)
+        return self.ancestors[p]
 
 
     def get_depth(self):
@@ -229,7 +227,7 @@ class TreeNode():
         The root is assumed to be the only node in the tree that has no
         parent.
         """
-        return self.root
+        return self.ancestors[-1]
 
 
     def get_num_nodes(self, depth=0):

@@ -177,16 +177,16 @@ class TestTree(unittest.TestCase):
         self.root.lock_tree()
 
         self.assertEqual(self.root.get_pth_parent(0), self.root)
-        self.assertRaises(AssertionError, self.root.get_pth_parent, 1)
+        self.assertRaises(IndexError, self.root.get_pth_parent, 1)
 
         self.assertEqual(self.node3.get_pth_parent(0), self.node3)
         self.assertEqual(self.node3.get_pth_parent(1), self.root)
-        self.assertRaises(AssertionError, self.node3.get_pth_parent, 2)
+        self.assertRaises(IndexError, self.node3.get_pth_parent, 2)
 
         self.assertEqual(self.node4.get_pth_parent(0), self.node4)
         self.assertEqual(self.node4.get_pth_parent(1), self.node3)
         self.assertEqual(self.node4.get_pth_parent(2), self.root)
-        self.assertRaises(AssertionError, self.node4.get_pth_parent, 3)
+        self.assertRaises(IndexError, self.node4.get_pth_parent, 3)
 
 
     def test_get_depth(self):
