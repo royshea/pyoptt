@@ -68,7 +68,7 @@ def pl_expand(t, p, l):
     Expand tree t by adding node with label l to the p-th parent of the
     right most leaf."""
 
-    expanded = copy.deepcopy(t)
+    expanded = tree.OrderedTreeNode.unrooted_build_tree_from_string(t)
     rml = expanded.get_right_most_leaf()
     pth_parent = rml.get_pth_parent(p)
     pth_parent.append_child(l)
@@ -121,15 +121,15 @@ def expand_trees(t, candidates, minsup, token_space):
         right_most_leaf = subtree.get_right_most_leaf()
         subtree.lock_tree()
         rml_depth = right_most_leaf.get_depth()
-        subtree.unlock_tree()
 
         # For each parent_distance (distance from rml) and token combination
         for parent_distance in range(rml_depth + 1):
+            subtree_string = subtree.build_string_from_tree()
             for token in token_space:
 
                 # Create a larger candidate subtree and locate its rmos
                 # within the tree t.
-                candidate = pl_expand(subtree, parent_distance, token)
+                candidate = pl_expand(subtree_string, parent_distance, token)
                 candidate_string = candidate.build_string_from_tree()
                 assert candidate_string not in c_new
                 c_new[candidate_string] = update_rmo(t, rmos, parent_distance, token)

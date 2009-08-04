@@ -45,9 +45,8 @@ class TestFreqt(unittest.TestCase):
     def setUp(self):
 
         # Tree used throughout the tests
-        tree_string = "1 1 -1 2 -1 1 -1 2 -1 -1 1 1 -1 1 -1 2 -1 -1"
-        self.root = tree.OrderedTreeNode("root")
-        self.root.build_tree_from_string(tree_string)
+        self.tree_string = "root 1 1 -1 2 -1 1 -1 2 -1 -1 1 1 -1 1 -1 2 -1 -1 -1"
+        self.root = tree.OrderedTreeNode.unrooted_build_tree_from_string(self.tree_string)
         self.root.lock_tree()
 
         # Build strings for subtrees
@@ -84,19 +83,19 @@ class TestFreqt(unittest.TestCase):
 
         self.root.unlock_tree()
 
-        tree0 = freqt.pl_expand(self.root, 0, 3)
+        tree0 = freqt.pl_expand(self.tree_string, 0, 3)
         tree0.lock_tree()
         self.assertEqual(tree0.get_num_nodes(), 11)
         self.assertEqual(tree0.get_nodes()[10].state, '3')
         self.assertEqual(tree0.get_nodes()[10].get_parent().state, '2')
 
-        tree1 = freqt.pl_expand(self.root, 1, 3)
+        tree1 = freqt.pl_expand(self.tree_string, 1, 3)
         tree1.lock_tree()
         self.assertEqual(tree1.get_num_nodes(), 11)
         self.assertEqual(tree1.get_nodes()[10].state, '3')
         self.assertEqual(tree1.get_nodes()[10].get_parent().state, '1')
 
-        tree2 = freqt.pl_expand(self.root, 2, 3)
+        tree2 = freqt.pl_expand(self.tree_string, 2, 3)
         tree2.lock_tree()
         self.assertEqual(tree2.get_num_nodes(), 11)
         self.assertEqual(tree2.get_nodes()[10].state, '3')
