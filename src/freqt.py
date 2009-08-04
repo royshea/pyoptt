@@ -71,7 +71,6 @@ def pl_expand(t, p, l):
     expanded = copy.deepcopy(t)
     rml = expanded.get_right_most_leaf()
     pth_parent = rml.get_pth_parent(p)
-    pth_parent.unlock_tree()
     pth_parent.append_child(l)
     return expanded
 
@@ -122,6 +121,7 @@ def expand_trees(t, candidates, minsup, token_space):
         right_most_leaf = subtree.get_right_most_leaf()
         subtree.lock_tree()
         rml_depth = right_most_leaf.get_depth()
+        subtree.unlock_tree()
 
         # For each parent_distance (distance from rml) and token combination
         for parent_distance in range(rml_depth + 1):

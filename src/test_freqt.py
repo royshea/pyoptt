@@ -82,6 +82,8 @@ class TestFreqt(unittest.TestCase):
 
     def test_pl_expand(self):
 
+        self.root.unlock_tree()
+
         tree0 = freqt.pl_expand(self.root, 0, 3)
         tree0.lock_tree()
         self.assertEqual(tree0.get_num_nodes(), 11)
