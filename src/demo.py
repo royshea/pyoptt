@@ -65,10 +65,10 @@ if __name__ == '__main__':
     frequent_subtrees = freqt.freqt(root, minsup)
 
     print "# ==== Size: Original Tree ====\n"
-    print "digraph {\n%s}\n\n" % str(root)
+    print "digraph {\n%s}\n\n" % root.print_tree()
 
     for key in sorted(frequent_subtrees.keys(), reverse=True):
         print "# ==== Size: %d ====\n" % key
         for subtree in frequent_subtrees[key]:
             print "digraph {\n%s}\n" % \
-                    str(tree.OrderedTreeNode.unrooted_build_tree_from_string(subtree))
+                    tree.OrderedTreeNode.unrooted_build_tree_from_string(subtree).print_tree()
